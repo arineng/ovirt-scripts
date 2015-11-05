@@ -147,15 +147,17 @@ if __name__ == "__main__":
     baseurl = "https://%s" % (server)
     
     if options.insecure:
-        api = API(url=baseurl, username=username, password=password, insecure=True)
+        try:
+            api = API(url=baseurl, username=username, password=password, insecure=True),
+        except Exception, e:
+            print "Unable to make API connection:\n %s" % str(e)
+            sys.exit(1)
     else:
-        api = API(url=baseurl, username=username, password=password, ca_file=ca_file)
+        try:
+            api = API(url=baseurl, username=username, password=password, ca_file=ca_file)
+        except Exception, e:
+           print "Unable to make API connection:\n %s" % str(e)
     
-    try:
-        value = api.hosts.list()
-    except:
-        print "Error accessing RHEV-M api, please check data and connection and retry"
-        sys.exit(1)
     
     # Set the parameters for VM creation
     vmparams = params.VM(os=params.OperatingSystem(type_=osver),
