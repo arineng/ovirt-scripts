@@ -126,7 +126,7 @@ if __name__ == "__main__":
     name = options.name
     cluster = options.cluster
     vmcpu = options.vmcpu
-    vmem = options.vmmem
+    vmmem = options.vmmem
     sdtype = options.sdtype
     sdsize = options.sdsize
     osver = options.osver
@@ -157,6 +157,7 @@ if __name__ == "__main__":
             api = API(url=baseurl, username=username, password=password, ca_file=ca_file)
         except Exception, e:
            print "Unable to make API connection:\n %s" % str(e)
+           sys.exit(1)
     
     
     # Set the parameters for VM creation
