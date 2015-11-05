@@ -141,9 +141,6 @@ if __name__ == "__main__":
     else:
         password = options.password
 
-    print username
-    print password
-    print server
     baseurl = "https://%s" % (server)
     
     if options.insecure:
@@ -174,10 +171,11 @@ if __name__ == "__main__":
             sparse=True, 
             interface="virtio", 
             type_="System", 
+            bootable=True,
             format="cow",
             storage_domains=params.StorageDomains(storage_domain=[api.storagedomains.get(name=storage_name)]))
     
-    vmnet = params.NIC()
+    #vmnet = params.NIC()
     network_net = params.Network(name=vmnet)
     nic_net1 = params.NIC(name='nic1', network=network_net, interface='virtio')
     
