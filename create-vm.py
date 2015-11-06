@@ -112,8 +112,8 @@ def add_vm(vmparams, name, vmdisk, nic_net1):
     status = api.vms.get(name=name).status.state
     while status != 'down':
         print status
-	time.sleep(1)
-	status = api.vms.get(name=name).status.state
+        time.sleep(1)
+        status = api.vms.get(name=name).status.state
     vm.start()
 
 # Define VM based on parameters
