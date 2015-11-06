@@ -90,7 +90,17 @@ def add_vm(vmparams, name, vmdisk, nic_net1):
     except:
         print "Error attaching disk, please recheck and remove any leftover configuration"
         sys.ext(1)
-
+    
+    if verbosity > 1:
+        print "Setting boot order"
+    try:
+        hd_boot_dev = params.Boot(dev='hd')
+        net_boot_dev = params.Boot(dev='network')
+        vm.os.set_boot([net_boot_dev, hd_boot_dev])
+    except:
+        print "Error setting boot order"
+        sys.exit(1)
+    
     if verbosity > 1:
         print "VM creation successful"
 
@@ -104,7 +114,7 @@ def add_vm(vmparams, name, vmdisk, nic_net1):
         print status
 	time.sleep(1)
 	status = api.vms.get(name=name).status.state
-	vm.start()
+    vm.start()
 
 # Define VM based on parameters
 if __name__ == "__main__":
@@ -174,7 +184,7 @@ if __name__ == "__main__":
             bootable=True,
             format="cow",
             storage_domains=params.StorageDomains(storage_domain=[api.storagedomains.get(name=storage_name)]))
-    
+
     #vmnet = params.NIC()
     network_net = params.Network(name=vmnet)
     nic_net1 = params.NIC(name='nic1', network=network_net, interface='virtio')
