@@ -155,7 +155,7 @@ if __name__ == "__main__":
     
     if options.insecure:
         try:
-            api = API(url=baseurl, username=username, password=password, insecure=True),
+            api = API(url=baseurl, username=username, password=password, insecure=True)
         except Exception, e:
             print "Unable to make API connection:\n %s" % str(e)
             sys.exit(1)
