@@ -57,7 +57,7 @@ def getParser(defaults):
     p.add_option("--config", dest="config", help="JSON config file")
     p.add_option("--storage", dest="storage_name", help="Name of the storage domain")
     p.add_option("--ca", dest="ca_file", help="Path to the ca file")
-    p.add_option("--insecure", dest="insecure", help="Connect without validating the CA")
+    p.add_option("--insecure", action="store_true", help="Connect without validating the CA")
     
     return p
 
