@@ -65,8 +65,9 @@ def getParser(defaults):
 def add_vm(vmparams, name, vmdisk, nic_net1):
     try:
         api.vms.add(vmparams)
-    except:
-        print "Error creating VM with specified parameters, recheck"
+    except Exception as e:
+        print "Error creating VM with specified parameters, recheck your params"
+        print e
         sys.exit(1)
 
     if verbosity > 1:
