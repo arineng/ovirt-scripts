@@ -1,0 +1,9 @@
+{
+	"name": "test-example-dev",
+	"cluster": "CLUSTER",
+	"vmcpu": "1",
+	"vmmem": "4",
+	"sdsize": "100",
+	"vmnet": "NET",
+	"storage_name": "STORAGE-FAST"
+}

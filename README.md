@@ -14,3 +14,16 @@ The following options are necessary:
 4. cluster - make sure to identify the cluster under which you'll install the vm
 5. sdsize - the size of the storage disk
 6. vmnet - the network to attach to the primary interface
+
+Sample json data
+```json
+{
+	"name": "test-example-dev",
+	"cluster": "CLUSTER",
+	"vmcpu": "1",
+	"vmmem": "4",
+	"sdsize": "100",
+	"vmnet": "NET",
+	"storage": "STORAGE-FAST"
+}
+```
