@@ -168,8 +168,9 @@ if __name__ == "__main__":
            sys.exit(1)
     
     
+    os=params.OperatingSystem(boot=[params.Boot(dev='network'), params.Boot(dev='hd')], type_=osver)
     # Set the parameters for VM creation
-    vmparams = params.VM(os=params.OperatingSystem(type_=osver),
+    vmparams = params.VM(os=os,
             cpu=params.CPU(topology=params.CpuTopology(cores=int(vmcpu))),
             name=name, 
             memory=1024 * 1024 * 1024 * int(vmmem),
