@@ -28,6 +28,9 @@ import ConfigParser
 from ovirtsdk.api import API
 from ovirtsdk.xml import params
 
+# Import fabric stuff to run puppet on the pop box
+from fabric.api import *
+
 description = """
 vmcreate is a script for creating vm's based on specified values
 
@@ -58,7 +61,8 @@ def getParser(defaults):
     p.add_option("--storage", dest="storage_name", help="Name of the storage domain")
     p.add_option("--ca", dest="ca_file", help="Path to the ca file")
     p.add_option("--insecure", action="store_true", help="Connect without validating the CA")
-    
+    p.add_option("-b", "--builder", dest="builder", help="When set, execute puppet on this POP")
+    p.add_option("-r", "--reboot", action="store_true", help="Whether or not to reboot the machine")
     return p
 
 # Define the function to add vms
@@ -117,6 +121,23 @@ def add_vm(vmparams, name, vmdisk, nic_net1):
         status = api.vms.get(name=name).status.state
     vm.start()
 
+def pop_puppet(builder):
+    env.hosts = [ builder ]
+    with settings(warn_only=True):
+        result = sudo("/opt/puppetlabs/bin/puppet agent -t")
+
+def reboot_vm(name):
+    vm = api.vms.get(name=name)
+    print "Stopping vm %s" % name
+    vm.stop()
+    status = api.vms.get(name=name).status.state
+    while status != 'down':
+        time.sleep(1)
+        status = api.vms.get(name=name).status.state
+    print "Starting vm %s" % name
+    vm.start()
+    
+
 # Define VM based on parameters
 if __name__ == "__main__":
    
@@ -129,6 +150,7 @@ if __name__ == "__main__":
 
     if configToLoad is not None:
         loadedConfig = json.load(open(configToLoad))
+    
         my_defaults.update(loadedConfig)
         options, args = getParser(my_defaults).parse_args()
 
@@ -146,6 +168,7 @@ if __name__ == "__main__":
     storage_name = options.storage_name
     ca_file = options.ca_file
     insecure = options.insecure
+    builder = options.builder
 
     if options.password is None:
         password = getpass.getpass()
@@ -176,7 +199,6 @@ if __name__ == "__main__":
             memory=1024 * 1024 * 1024 * int(vmmem),
             cluster=api.clusters.get(name=cluster),
             template=api.templates.get(name="Blank"), type_="server")
-    
     vmdisk = params.Disk(
             size=1024 * 1024 * 1024 * int(sdsize), 
             wipe_after_delete=True, 
@@ -192,5 +214,29 @@ if __name__ == "__main__":
     nic_net1 = params.NIC(name='nic1', network=network_net, interface='virtio')
     
     # Commit the action of adding the VM
-    add_vm(vmparams, name, vmdisk, nic_net1)
+    try:
+        add_vm(vmparams, name, vmdisk, nic_net1)
+        vm = api.vms.get(name=name)    
+        mac = vm.nics.get(name="nic1").mac.get_address()
+        print "VM %s added, MAC address %s" % (name, mac)
+    except:
+        print "Something went wrong"
+        e = sys.exc_info()[0]
+        print e
+
+    if options.builder:
+        yes = set(['yes','y', 'ye', ''])
+        no = set(['no', 'n'])
+        print "Have you updated hiera with your VM's MAC?"
+
+        choice = raw_input().lower()
+        if choice in yes:
+            pop_puppet(builder)
+        elif choice in no:
+            print "Be sure to commit changes to the PCR, push, and reboot the VM"
+        else:
+            sys.stdout.write("Please repond with 'yes' or 'no'")
+
+    if options.reboot:
+        reboot_vm(name)
 #print "MAC:%s" % vm.nics.get(name="eth0").mac.get_address()
