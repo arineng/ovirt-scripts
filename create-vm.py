@@ -121,7 +121,7 @@ def add_vm(vmparams, name, vmdisk, nic_net1):
         status = api.vms.get(name=name).status.state
     vm.start()
 
-def pop_puppet(builder):
+def pop_puppet():
     with settings(warn_only=True):
         result = sudo("/opt/puppetlabs/bin/puppet agent -t")
 
