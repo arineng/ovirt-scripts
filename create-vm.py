@@ -121,6 +121,10 @@ def add_vm(vmparams, name, vmdisk, nic_net1):
         status = api.vms.get(name=name).status.state
     vm.start()
 
+def deploy(builder):
+    host_list = [ builder ]
+    execute(pop_puppet, hosts=host_list)
+
 def pop_puppet():
     with settings(warn_only=True):
         result = sudo("/opt/puppetlabs/bin/puppet agent -t")
@@ -230,8 +234,7 @@ if __name__ == "__main__":
 
         choice = raw_input().lower()
         if choice in yes:
-            env.hosts = [ builder ]
-            pop_puppet()
+            deploy(builder)
         elif choice in no:
             print "Be sure to commit changes to the PCR, push, and reboot the VM"
         else:
